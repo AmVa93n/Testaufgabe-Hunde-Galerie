@@ -9,37 +9,35 @@ function SubbreedsGallery() {
     const isFavorited = favorites.includes(images[currentIndex]); // check if the current image is favorited
 
     useEffect(() => {
-        async function fetchImages() {
+      async function fetchImages() {
+          if (!selectedBreed) return; // don't fetch before any breed was selected
           const newImages = [];
-          if (checkedSubbreeds.length > 0) { // if breed has subreeds
-            for (let subbreed of checkedSubbreeds) {
-              try {
-                const response = await fetch(`https://dog.ceo/api/breed/${selectedBreed}/${subbreed}/images`);
-                const data = await response.json();
-                if (data.status === "success") {
-                  newImages.push(...data.message); // add fetched images to the array
-                }
-              } catch (error) {
-                console.error('Error fetching images:', error);
+          try {
+              // fetch images for each subbreed or the breed itself
+              if (checkedSubbreeds.length > 0) {
+                  const fetches = checkedSubbreeds.map(async subbreed => {
+                      const response = await fetch(`https://dog.ceo/api/breed/${selectedBreed}/${subbreed}/images`);
+                      const data = await response.json();
+                      return data.status === "success" ? data.message : [];
+                  });
+                  const results = await Promise.all(fetches);
+                  results.forEach(images => newImages.push(...images));
+              } else {
+                  const response = await fetch(`https://dog.ceo/api/breed/${selectedBreed}/images`);
+                  const data = await response.json();
+                  if (data.status === "success") {
+                      newImages.push(...data.message);
+                  }
               }
-            }
-          } else { // if breed has no subbreeds
-            try {
-              const response = await fetch(`https://dog.ceo/api/breed/${selectedBreed}/images`);
-              const data = await response.json();
-              if (data.status === "success") {
-                newImages.push(...data.message); // add fetched images to the array
-              }
-            } catch (error) {
+              setImages(newImages);
+              const index = Math.floor(Math.random() * newImages.length); // pick a random image initially
+              setCurrentIndex(index);
+          } catch (error) {
               console.error('Error fetching images:', error);
-            }
           }
-          setImages(newImages);
-          const index = Math.floor(Math.random() * newImages.length) 
-          setCurrentIndex(index); // pick a random image whenever new images are fetched
-        };
-    
-        fetchImages();
+      };
+
+      fetchImages();
     }, [selectedBreed, checkedSubbreeds]);
 
     function handleNextImage() {
@@ -68,14 +66,30 @@ function SubbreedsGallery() {
       marginTop: '20px',
       borderRadius: '8px',
       border: '2px solid #004177',
+      fontSize: 'larger',
+      color: "#004177",
+      cursor: 'pointer',
     }
+
+    const disabledButtonStyle = {
+      ...buttonStyle,
+      backgroundColor: 'lightgrey', 
+      color: 'grey',
+      borderColor: 'grey',
+      cursor: 'not-allowed',
+    };
 
     return (
       <div style={{ width: '600px', height: '470px' }}>
         {images.length > 0 && 
         <>
           <div style={{ position: 'relative', width: '600px', height: '400px' }}>
-            <img alt='randomImage' src={images[currentIndex]} style={{width: '100%', height: '100%'}}/>
+            <img 
+                alt='randomImage' 
+                src={images[currentIndex]} 
+                style={{width: '100%', height: '100%'}}
+                loading="lazy"
+                />
             <img
                 src={isFavorited ? favoriteFill : favoriteOutline}
                 alt="Favorite"
@@ -91,8 +105,16 @@ function SubbreedsGallery() {
             />
           </div>
           <div style={{display: 'flex', justifyContent: 'space-between'}}>
-              <button onClick={handlePreviousImage} style={buttonStyle} disabled={currentIndex === 0}>Vorheiges Bild</button>
-              <button onClick={handleNextImage} style={buttonStyle} disabled={currentIndex === images.length - 1}>Nächstes Bild</button>
+              <button 
+                onClick={handlePreviousImage} 
+                style={currentIndex === 0 ? disabledButtonStyle : buttonStyle} 
+                disabled={currentIndex === 0}>
+                  Vorheiges Bild</button>
+              <button 
+                onClick={handleNextImage} 
+                style={currentIndex === images.length - 1 ? disabledButtonStyle : buttonStyle} 
+                disabled={currentIndex === images.length - 1}>
+                  Nächstes Bild</button>
           </div>
           
         </>}

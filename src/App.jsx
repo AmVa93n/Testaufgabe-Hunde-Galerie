@@ -6,7 +6,7 @@ import FavoritesGallery from './components/FavoritesGallery'
 
 function App() {
   return (
-    <>
+    <div style={{display: 'flex', flexDirection: 'column', gap: 50}}>
       <h1>Testaufgabe</h1>
       <div>
         <h2>Auswahl Hunderasse</h2>
@@ -15,15 +15,17 @@ function App() {
       
       <div>
         <h2>Gallerie Subrassen</h2>
-        <SubbreedCheckboxes />
-        <SubbreedsGallery />
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <SubbreedCheckboxes />
+          <SubbreedsGallery />
+        </div>
       </div>
 
       <div>
         <h2>Gallerie Favoriten</h2>
         <FavoritesGallery />
       </div>
-    </>
+    </div>
   )
 }
 

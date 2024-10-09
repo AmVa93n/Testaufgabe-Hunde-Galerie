@@ -16,7 +16,7 @@ function SubbreedCheckboxes() {
     };
 
     return (
-        <div style={{display: 'flex', alignItems: 'center'}}>
+        <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap'}}>
             {subbreeds.map((subbreed) => (
                 <div key={subbreed} style={{ display: 'flex', alignItems: 'center' }}>
                     <input
@@ -31,9 +31,9 @@ function SubbreedCheckboxes() {
                         src={checkedSubbreeds.includes(subbreed) ? checkboxDone : checkboxOpen}
                         alt={checkedSubbreeds.includes(subbreed) ? 'Checked' : 'Unchecked'}
                         onClick={() => handleToggle(subbreed)} // toggle on image click
-                        style={{ cursor: 'pointer', width: '24px', marginRight: '8px' }}
+                        style={{ cursor: 'pointer', width: '24px', marginRight: '5px', marginLeft: '15px' }}
                     />
-                    <label htmlFor={subbreed} style={{ cursor: 'pointer' }}>{capitalize(subbreed)}</label>
+                    <label htmlFor={subbreed} style={{ cursor: 'pointer', color: "#004177" }}>{capitalize(subbreed)}</label>
                 </div>
             ))}
         </div>
